@@ -3,8 +3,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+  const router = useRouter();
+
   const [userSignUpInfo, setUserSignUpInfo] = useState({
     userName: "",
     name: "",
@@ -21,10 +25,31 @@ export default function Signup() {
     setUserSignUpInfo({ ...userSignUpInfo, [id]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign-up logic here
-    console.log(userSignUpInfo);
+
+    const { confirmPassword, ...dataToSubmit } = userSignUpInfo;
+
+    if (userSignUpInfo.password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/users/signup", dataToSubmit);
+      console.log(response.data);
+      if (response.data.success) {
+        // Handle successful signup (e.g., redirect to login page)
+        alert("Signup successful! Please log in.");
+        router.push("/login");
+      } else {
+        // Handle signup error (e.g., display error message)
+        alert(response.data.error);
+      }
+    } catch (error) {
+      console.error("There was an error signing up!", error);
+      alert("An error occurred during signup. Please try again.");
+    }
   };
 
   return (
@@ -37,13 +62,13 @@ export default function Signup() {
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="userName"
             >
-              user Name
+              Username
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="userName"
               type="text"
-              placeholder="user Name"
+              placeholder="Username"
               value={userSignUpInfo.userName}
               onChange={handleChange}
             />
@@ -51,20 +76,19 @@ export default function Signup() {
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="Name"
+              htmlFor="name"
             >
               Name
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="Name"
+              id="name"
               type="text"
               placeholder="Name"
               value={userSignUpInfo.name}
               onChange={handleChange}
             />
           </div>
-
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -84,13 +108,13 @@ export default function Signup() {
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="Bio"
+              htmlFor="bio"
             >
               Bio
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="Bio"
+              id="bio"
               type="text"
               placeholder="Bio"
               value={userSignUpInfo.bio}
@@ -106,7 +130,7 @@ export default function Signup() {
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="Address"
+              id="address"
               type="text"
               placeholder="Address"
               value={userSignUpInfo.address}
