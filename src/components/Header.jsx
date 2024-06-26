@@ -1,6 +1,22 @@
+"use client";
 import Link from "next/link";
+import axios from "axios";
+import { usePathname, useRouter } from "next/navigation";
 
 const Header = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/users/logout");
+      alert("Logout Successful");
+      router.push("/login");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <header className="p-3 text-bg-dark">
       <div className="container">
@@ -20,25 +36,30 @@ const Header = () => {
             </svg>
           </a>
 
-          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li>
-              <Link href="/" className="nav-link px-2 text-white">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/AddPost" className="nav-link px-2 text-white">
-                AddPost
-              </Link>
-            </li>
-          </ul>
+          {pathname !== "/login" && pathname !== "/signup" && (
+            <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li>
+                <Link href="/" className="nav-link px-2 text-white">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/AddPost" className="nav-link px-2 text-white">
+                  AddPost
+                </Link>
+              </li>
+            </ul>
+          )}
           <div className="text-end">
-            <button type="button" className="btn btn-outline-light me-2">
-              Login
-            </button>
-            <button type="button" className="btn btn-warning">
-              Sign-up
-            </button>
+            {pathname !== "/login" && pathname !== "/signup" && (
+              <button
+                type="button"
+                className="btn btn-outline-light me-2"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            )}
           </div>
         </div>
       </div>
