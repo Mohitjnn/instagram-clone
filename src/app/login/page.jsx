@@ -3,8 +3,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Login() {
+  const router = useRouter();
   const [userSignInInfo, setUserSignInInfo] = useState({
     userName: "",
     email: "",
@@ -16,10 +19,16 @@ export default function Login() {
     setUserSignInInfo({ ...userSignInInfo, [id]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign-in logic here
-    console.log(userSignInInfo);
+    try {
+      const response = await axios.post("/api/users/login", userSignInInfo);
+      console.log(response.data);
+      router.push(`/profile/${response.data.userName}`);
+    } catch (error) {
+      console.error("There was an error signing in!", error);
+      alert("An error occurred during login. Please try again.");
+    }
   };
 
   return (
