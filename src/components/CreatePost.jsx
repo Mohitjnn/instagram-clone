@@ -5,7 +5,6 @@ import { PostListContext } from "@/store/post-list-store";
 const CreatePost = () => {
   const { addPost } = useContext(PostListContext);
 
-  const userIdElement = useRef();
   const postTitleElement = useRef();
   const postBodyElement = useRef();
   const likesElement = useRef();
@@ -14,38 +13,23 @@ const CreatePost = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const userId = userIdElement.current.value;
     const title = postTitleElement.current.value;
     const body = postBodyElement.current.value;
     const likes = likesElement.current.value;
     const dislikes = dislikesElement.current.value;
     const tags = tagsElement.current.value.split(" ");
 
-    userIdElement.current.value = "";
     postTitleElement.current.value = "";
     postBodyElement.current.value = "";
     likesElement.current.value = "";
     dislikesElement.current.value = "";
     tagsElement.current.value = "";
 
-    addPost(userId, title, body, likes, dislikes, tags);
+    addPost(title, body, likes, dislikes, tags);
   };
 
   return (
     <form className="create-post" onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <label htmlFor="userId" className="form-label">
-          Enter your User Id here
-        </label>
-        <input
-          type="text"
-          ref={userIdElement}
-          className="form-control"
-          id="userId"
-          placeholder="Your User Id"
-        />
-      </div>
-
       <div className="mb-3">
         <label htmlFor="title" className="form-label">
           Post Title

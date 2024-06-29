@@ -4,8 +4,8 @@ const PostsSchema = new mongoose.Schema({
   id: {
     type: Number,
   },
-  userId: {
-    type: Number,
+  userName: {
+    type: String,
     required: true,
   },
   title: {

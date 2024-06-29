@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer, useEffect, useState } from "react";
 
 export const PostListContext = createContext({
   postList: [],
@@ -46,19 +46,12 @@ const PostListProvider = ({ children }) => {
     fetchInitialPosts();
   }, []);
 
-  const addPost = async (
-    userId,
-    postTitle,
-    postBody,
-    likes,
-    dislikes,
-    tags
-  ) => {
+  const addPost = async (postTitle, postBody, likes, dislikes, tags) => {
     const newPost = {
       title: postTitle,
       body: postBody,
       reactions: { likes, dislikes },
-      userId,
+      userName: "",
       tags,
     };
 

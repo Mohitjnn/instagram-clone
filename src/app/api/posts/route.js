@@ -1,6 +1,8 @@
 import dbConnect from "@/lib/db";
 import posts from "@/model/Posts";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function GET() {
   await dbConnect();
@@ -21,8 +23,15 @@ export async function POST(request) {
   await dbConnect();
 
   try {
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
+    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
     const newPost = await request.json();
+
+    newPost.userName = decodedToken.userName;
+
     const createdPost = await posts.create(newPost);
+
     return NextResponse.json(createdPost);
   } catch (error) {
     console.error("Error adding new post:", error);
