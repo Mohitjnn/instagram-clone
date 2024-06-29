@@ -1,34 +1,45 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-const UserProfile = ({ params }) => {
+const UserProfile = async ({ params }) => {
   const userId = params.id;
-  const [userData, setUserData] = useState(null);
 
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch("/api/users/me", {
-        method: "GET",
-        credentials: "include", // Ensure cookies are included in the request
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      const { data } = await response.json();
-      console.log(data);
-      setUserData(data);
-    } catch (error) {
-      console.log(error);
+  let user = null;
+  let error = null;
+
+  // try {
+  //   // Read the token from cookies
+  //   const cookieStore = cookies();
+  //   const token = cookieStore.get("token")?.value; // Correctly extract the token value as a string
+
+  //   if (!token) {
+  //     redirect("/login");
+  //   }
+  try {
+    // Fetch user data from the API route
+    const response = await fetch(`http://192.168.29.147:3000/api/users/me`, {
+      method: "POST", // Change to POST for sending data
+      body: JSON.stringify({
+        // Convert data to JSON string
+        userId: userId,
+      }),
+      headers: {
+        "Content-Type": "application/json", // Specify JSON content type
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(await response.text());
     }
-  };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+    user = await response.json();
+  } catch (err) {
+    error = err.message || "Error loading user profile";
+    console.error("Error fetching user profile:", err.message);
+  }
 
-  if (!userData) {
-    return <div>Loading...</div>;
+  if (error) {
+    return <div>{error}</div>;
   }
 
   return (
@@ -41,23 +52,23 @@ const UserProfile = ({ params }) => {
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Name:</div>
-          <div className="text-gray-900">{userData.name}</div>
+          <div className="text-gray-900">{user.name}</div>
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Email:</div>
-          <div className="text-gray-900">{userData.email}</div>
+          <div className="text-gray-900">{user.email}</div>
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Bio:</div>
-          <div className="text-gray-900">{userData.bio}</div>
+          <div className="text-gray-900">{user.bio}</div>
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Address:</div>
-          <div className="text-gray-900">{userData.address}</div>
+          <div className="text-gray-900">{user.address}</div>
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Phone:</div>
-          <div className="text-gray-900">{userData.phoneNumber}</div>
+          <div className="text-gray-900">{user.phoneNumber}</div>
         </div>
       </div>
     </div>

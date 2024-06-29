@@ -1,20 +1,37 @@
-import { getDataFromToken } from "@/helpers/GetDataFromToken";
+// app/api/users/route.js
 import { NextResponse } from "next/server";
-import userModel from "@/models/userModel";
 import dbConnect from "@/lib/db";
+import userModel from "@/models/userModel";
 
-export async function GET(request) {
+export async function POST(req) {
+  // Connect to the database
   await dbConnect();
-  // console.log(request);
   try {
-    const userId = await getDataFromToken(request);
+    // Extract user data from the request body
+    const { userId } = await req.json();
 
+    // Validate user ID (optional, add your validation logic here)
+    if (!userId) {
+      return NextResponse.json({ message: "Missing user ID" }, { status: 400 });
+    }
+
+    // Fetch the user details excluding password and isVerified fields
     const user = await userModel
-      .findOne({ _id: userId })
+      .findOne({ userName: userId }) // Use _id for user identification
       .select("-password -isVerified");
-    return NextResponse.json({ message: "User Found", data: user });
+
+    // If the user data is not found, throw an error
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    // Send the user data as JSON
+    return NextResponse.json(user);
   } catch (error) {
-    console.log("Error:", error.message); // Log the error
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error fetching user profile:", error.message);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
