@@ -1,16 +1,35 @@
-// app/user-profile/page.jsx
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 
 const UserProfile = ({ params }) => {
-  // Dummy data based on params.id
   const userId = params.id;
-  const userData = {
-    name: "John Doe",
-    email: `user${userId}@example.com`,
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    address: "1234 Street Name, City, State, Zip",
-    phone: "123-456-7890",
+  const [userData, setUserData] = useState(null);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("/api/users/me", {
+        method: "GET",
+        credentials: "include", // Ensure cookies are included in the request
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      const { data } = await response.json();
+      console.log(data);
+      setUserData(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -38,7 +57,7 @@ const UserProfile = ({ params }) => {
         </div>
         <div className="mb-4">
           <div className="text-gray-700 text-sm font-bold">Phone:</div>
-          <div className="text-gray-900">{userData.phone}</div>
+          <div className="text-gray-900">{userData.phoneNumber}</div>
         </div>
       </div>
     </div>

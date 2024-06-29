@@ -20,7 +20,6 @@ const PostList = () => {
         console.error("Error fetching initial posts:", error);
       }
     };
-
     fetchInitialPosts();
   }, [addInitialPosts]);
 
@@ -39,6 +38,7 @@ const PostList = () => {
           key={post.id}
           title={post.title}
           id={post.id}
+          userName={post.userName}
           tags={post.tags}
           reactions={post.reactions.likes}
           body={post.body}

@@ -42,7 +42,12 @@ export async function POST(request) {
       userName: user.userName, // Add userName to the response
     });
 
-    response.cookies.set("token", token, { httpOnly: true });
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "strict",
+    });
 
     return response;
   } catch (error) {

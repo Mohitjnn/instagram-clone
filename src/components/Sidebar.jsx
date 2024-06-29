@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -45,6 +45,19 @@ const Sidebar = () => {
               <use xlinkHref="#speedometer2"></use>
             </svg>
             Create Post
+          </Link>
+        </li>
+        <li>
+          <Link
+            href={`/profile/${id}`}
+            className={`nav-link text-white ${
+              pathname === `/profile/${id}` && "active"
+            }`}
+          >
+            <svg className="bi pe-none me-2" width="16" height="16">
+              <use xlinkHref="#speedometer2"></use>
+            </svg>
+            Profile Page
           </Link>
         </li>
       </ul>
