@@ -2,10 +2,25 @@
 import Link from "next/link";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const Header = () => {
+  const [userName, setUserName] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("/api/users/header");
+        setUserName(response.data.userName);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -48,6 +63,20 @@ const Header = () => {
                   AddPost
                 </Link>
               </li>
+              {userName ? (
+                <li>
+                  <Link
+                    href={`/profile/${userName}`}
+                    className="nav-link px-2 text-white"
+                  >
+                    Profile
+                  </Link>
+                </li>
+              ) : (
+                <li>
+                  <span className="nav-link px-2 text-muted">Loading...</span>
+                </li>
+              )}
             </ul>
           )}
           <div className="text-end">

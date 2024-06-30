@@ -3,7 +3,6 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import PostListProvider from "@/store/post-list-store";
 import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
