@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { PostListContext } from "@/store/post-list-store";
+import Link from "next/link";
 
 const Post = ({ title, tags, reactions, body, userName }) => {
   const { deletePost } = useContext(PostListContext);
@@ -10,6 +11,12 @@ const Post = ({ title, tags, reactions, body, userName }) => {
     <div className="card post-card" style={{ width: "100%" }}>
       <div className="card-body">
         <h5 className="card-title">User: {userName}</h5>
+        <Link
+          href={`/profile/${userName}`}
+          className="badge rounded-pill bg-green-500 cursor-pointer my-2"
+        >
+          visit profile
+        </Link>
         <h5 className="card-title">
           {title}
           <span

@@ -22,11 +22,9 @@ export async function POST(request) {
   await dbConnect();
 
   try {
-    const decodedToken = getDataFromToken();
     const newPost = await request.json();
-
+    const decodedToken = getDataFromToken();
     newPost.userName = decodedToken.userName;
-
     const createdPost = await posts.create(newPost);
 
     return NextResponse.json(createdPost);
@@ -41,7 +39,7 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   await dbConnect();
-  const { postTitle, userName } = await request.json(); // Ensure you're correctly parsing the request body
+  const { postTitle, userName } = await request.json();
 
   try {
     const decodedToken = getDataFromToken();
@@ -51,11 +49,7 @@ export async function DELETE(request) {
         { status: 403 }
       );
     }
-    const result = await posts.deleteOne({ title: postTitle }); // Assuming `title` is the field to match
-    if (result.deletedCount === 0) {
-      return NextResponse.json({ error: "Post not found." }, { status: 404 });
-    }
-
+    await posts.deleteOne({ title: postTitle });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting post:", error);
