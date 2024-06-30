@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import posts from "@/models/Posts";
+import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
 import getDataFromToken from "@/helper/GetDataFromToken";
 
@@ -7,12 +8,28 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const postList = await posts.find({}).exec();
+    // Fetch the user's follow list and their own username
+    const dataToken = getDataFromToken();
+    const userName = dataToken.userName;
+    const user = await userModel.findOne({ userName: userName }).exec();
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const followList = user.follow;
+
+    // Fetch posts where username is in the follow list or is the user's own username
+    const postList = await posts
+      .find({
+        userName: { $in: [...followList, userName] },
+      })
+      .exec();
+
     return NextResponse.json(postList);
   } catch (error) {
-    console.error("Error fetching Postlist:", error);
+    console.error("Error fetching postList:", error);
     return NextResponse.json(
-      { error: "Failed to fetch postslist. Please try again." },
+      { error: "Failed to fetch posts. Please try again." },
       { status: 500 }
     );
   }

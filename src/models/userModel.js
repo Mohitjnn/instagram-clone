@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  follow: { type: [String], default: [] },
   forgotPasswordToken: String,
   forgotPasswordExpiry: String,
   verifyToken: String,
