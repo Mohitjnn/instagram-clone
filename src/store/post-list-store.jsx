@@ -73,12 +73,12 @@ const PostListProvider = ({ children }) => {
     }
   };
 
-  const deletePost = async (postTitle) => {
+  const deletePost = async (postTitle, userName) => {
     try {
       const response = await fetch("/api/posts", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postTitle }), // Send postTitle in the request body
+        body: JSON.stringify({ postTitle, userName }), // Send postTitle in the request body
       });
 
       if (!response.ok) {

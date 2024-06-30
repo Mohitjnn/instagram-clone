@@ -1,8 +1,7 @@
 import dbConnect from "@/lib/db";
-import posts from "@/model/Posts";
+import posts from "@/models/Posts";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import getDataFromToken from "@/helper/GetDataFromToken";
 
 export async function GET() {
   await dbConnect();
@@ -23,9 +22,7 @@ export async function POST(request) {
   await dbConnect();
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("token")?.value;
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    const decodedToken = getDataFromToken();
     const newPost = await request.json();
 
     newPost.userName = decodedToken.userName;
@@ -44,11 +41,21 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   await dbConnect();
-
-  const { postTitle } = await request.json(); // Ensure you're correctly parsing the request body
+  const { postTitle, userName } = await request.json(); // Ensure you're correctly parsing the request body
 
   try {
-    await posts.deleteOne({ title: postTitle }); // Assuming `title` is the field to match
+    const decodedToken = getDataFromToken();
+    if (userName !== decodedToken.userName) {
+      return NextResponse.json(
+        { success: false, error: "User not authorized to delete this post." },
+        { status: 403 }
+      );
+    }
+    const result = await posts.deleteOne({ title: postTitle }); // Assuming `title` is the field to match
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "Post not found." }, { status: 404 });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting post:", error);

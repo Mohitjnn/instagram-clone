@@ -14,7 +14,7 @@ const Post = ({ title, tags, reactions, body, userName }) => {
           {title}
           <span
             className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            onClick={() => deletePost(title)} // Pass title to deletePost function
+            onClick={() => deletePost(title, userName)} // Pass title to deletePost function
           >
             <AiFillDelete />
           </span>
